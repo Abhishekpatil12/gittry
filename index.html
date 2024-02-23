@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Login Form</title>
+
+</head>
+
+
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-4 col-md-6 col-sm-8">
+        <form id="loginForm" class="p-4 shadow rounded">
+          <h2 class="text-center mb-4">Login</h2>
+          <div class="mb-3">
+            <label for="mbnumber" class="form-label">Mobile No : </label>
+            <input type="text" class="form-control" id="exampleInputmobileno" required>
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="card-container">
+    <!-- Cards will be displayed here -->
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, getDocs, collection} from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+    import { getDatabase, ref, set ,child,update,remove,onValue} from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAN1xuZAb811s8P67_mc9ofAIpEcR2h-Xg",
+      authDomain: "tryweb-4ca26.firebaseapp.com",
+      databaseURL: "https://tryweb-4ca26-default-rtdb.firebaseio.com",
+      projectId: "tryweb-4ca26",
+      storageBucket: "tryweb-4ca26.appspot.com",
+      messagingSenderId: "478287675166",
+      appId: "1:478287675166:web:a514627aa9fe97319a130f"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    //const db = firebase.firestore(app);
+    const db = getDatabase();
+
+
+
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let email = document.getElementById('exampleInputEmail1').value;
+    let password = document.getElementById('exampleInputPassword1').value;
+    let mbnumber = document.getElementById('exampleInputmobileno').value;
+
+
+    //save data 
+    writeUserData(email,password,mbnumber);
+
+      
+      function writeUserData(email, password,mobile) {
+      
+          set(ref(db,'user/'+mobile),{
+            email: email,
+            password: password,
+            mobileno: mobile
+          }).then(()=>{
+            alert("Data added successfully");
+          })
+          .catch((error)=>{
+            alert("unsuccessfully");
+            console.log(error);
+          })
+      
+    }
+
+
+    //read data
+
+    const getdatatry = ref(db,'user/');
+    onValue(getdatatry,(snapshot)=>{
+
+      const data = snapshot.val();
+      //displayDataInCards(data);
+      console.log('Data:', data);
+    })
+
+    function displayDataInCards(data) {
+
+      const container = document.getElementById('card-container'); 
+      
+      // Loop through the data and create cards dynamically
+      for (let key in data) {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        const title = document.createElement('h2');
+        title.textContent = data[key].email;
+        const description = document.createElement('p');
+        description.textContent = data[key].password;
+        // Append title and description to the card
+        card.appendChild(title);
+        card.appendChild(description);
+        // Append the card to the container
+        container.appendChild(card);
+      }
+}
+
+    /*
+
+    const postContainer = document.querySelector('.card-container');    
+
+      const postMethods = ()=>{
+
+      data.map((postData)=>{
+
+          console.log(postData)
+
+          const postElement = document.createElement('div');
+          postElement.classList.add('card');
+          postElement.innerHTML=`
+          <h2 class="card-heading">${postData.title}</h2>
+          <p class="card-body">${postData.content}</p>
+          `
+
+          postContainer.appendChild(postElement);
+      })
+}
+
+postMethods();
+
+    
+*/
+
+    // Perform validation or authentication logic here
+    // For demonstration, you can log the values to the console
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Mobile no : ',mbnumber);
+
+
+  });
+    
+  </script>
+
+  
+</body>
+</html>
